@@ -30,7 +30,7 @@ def translate_document(project_id: str, file_path: str):
 
     document_input_config = {
         "content": document_content,
-        "mime_type": "application/pdf",
+        "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     }
 
     response = client.translate_document(

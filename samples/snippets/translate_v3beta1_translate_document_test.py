@@ -19,7 +19,7 @@ import translate_v3beta1_translate_document
 
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 
-FILE_PATH = "resources/fake_invoice.pdf"
+FILE_PATH = "resources/translation_document_1.docx"
 
 
 def test_translate_document(capsys):
