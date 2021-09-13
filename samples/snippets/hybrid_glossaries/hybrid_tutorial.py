@@ -88,9 +88,7 @@ def create_glossary(languages, project_id, glossary_name, glossary_uri):
     name = client.glossary_path(project_id, location, glossary_name)
 
     # Set language codes
-    language_codes_set = translate.Glossary.LanguageCodesSet(
-        language_codes=languages
-    )
+    language_codes_set = translate.Glossary.LanguageCodesSet(language_codes=languages)
 
     gcs_source = translate.GcsSource(input_uri=glossary_uri)
 
@@ -143,21 +141,76 @@ def translate_text(
     # Designates the data center location that you want to use
     location = "us-central1"
 
-    glossary = client.glossary_path(project_id, location, glossary_name)
+    name = client.glossary_path(project_id, location, glossary_name)
 
-    glossary_config = translate.TranslateTextGlossaryConfig(glossary=glossary)
+    """
+    language_codes_set = {
+        "language_codes": [source_language_code, target_language_code],
+    }
+    """
+    language_codes_set = translate.Glossary.LanguageCodesSet(
+        language_codes=[source_language_code, target_language_code]
+    )
+
+    input_uri = "gs://cloud-samples-data/translation/bistro_glossary.csv"
+
+
+    """
+    gcs_source = {
+        "input_uri": input_uri
+    }
+    """
+    gcs_source = translate.GcsSource(input_uri=input_uri)
+
+    """
+    input_config = {
+        "gcs_source": gcs_source,
+    }
+    """
+    input_config = translate.GlossaryInputConfig(gcs_source=gcs_source)
+
+    """
+    glossary = {
+        "name": name,
+        "language_codes_set": language_codes_set,
+        "input_config": input_config,
+    }
+    """
+    glossary = translate.Glossary(
+        name=name, language_codes_set=language_codes_set, input_config=input_config
+    )
 
     parent = f"projects/{project_id}/locations/{location}"
 
+    try:
+        operation = client.create_glossary(parent=parent, glossary=glossary)
+        operation.result(timeout=90)
+        print("Created glossary " + glossary_name + ".")
+    except AlreadyExists:
+        print(
+            "The glossary "
+            + glossary_name
+            + " already exists. No new glossary was created."
+        )
+
+    """
+    translate_text_glossary_config = {
+        "glossary": name,
+    }
+    """
+    translate_text_glossary_config = translate.TranslateTextGlossaryConfig(glossary=name)
+
+    request = {
+        "contents": [text],
+        "mime_type": "text/plain",
+        "source_language_code": source_language_code,
+        "target_language_code": target_language_code,
+        "parent": parent,
+        "glossary_config": translate_text_glossary_config,
+    }
+
     result = client.translate_text(
-        request={
-            "parent": parent,
-            "contents": [text],
-            "mime_type": "text/plain",  # mime types: text/plain, text/html
-            "source_language_code": source_language_code,
-            "target_language_code": target_language_code,
-            "glossary_config": glossary_config,
-        }
+        request=request,
     )
 
     # Extract translated text from API response

@@ -30,7 +30,7 @@ PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 
 def test_vision_standard_format():
     # Generate text using Vision API
-    text = pic_to_text('resources/standard_format.jpeg')
+    text = pic_to_text("resources/standard_format.jpeg")
 
     assert len(text) > 0
 
