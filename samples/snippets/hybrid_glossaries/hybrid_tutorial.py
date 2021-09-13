@@ -154,7 +154,6 @@ def translate_text(
 
     input_uri = "gs://cloud-samples-data/translation/bistro_glossary.csv"
 
-
     """
     gcs_source = {
         "input_uri": input_uri
@@ -198,7 +197,9 @@ def translate_text(
         "glossary": name,
     }
     """
-    translate_text_glossary_config = translate.TranslateTextGlossaryConfig(glossary=name)
+    translate_text_glossary_config = translate.TranslateTextGlossaryConfig(
+        glossary=name
+    )
 
     request = {
         "contents": [text],
@@ -209,9 +210,7 @@ def translate_text(
         "glossary_config": translate_text_glossary_config,
     }
 
-    result = client.translate_text(
-        request=request,
-    )
+    result = client.translate_text(request=request,)
 
     # Extract translated text from API response
     return result.glossary_translations[0].translated_text
